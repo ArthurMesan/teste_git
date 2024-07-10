@@ -1,6 +1,8 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include <stdbool.h>
+
 typedef struct MinHeapNode {
     int v;
     int dist;
