@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "heap.h"
-
 
 MinHeapNode* newMinHeapNode(int v, int dist, int portalsUsed) {
     MinHeapNode* minHeapNode = (MinHeapNode*)malloc(sizeof(MinHeapNode));
@@ -19,6 +17,15 @@ MinHeap* createMinHeap(int capacity) {
     minHeap->capacity = capacity;
     minHeap->array = (MinHeapNode**)malloc(capacity * sizeof(MinHeapNode*));
     return minHeap;
+}
+
+void freeMinHeap(MinHeap* minHeap) {
+    for (int i = 0; i < minHeap->capacity; ++i) {
+        free(minHeap->array[i]);
+    }
+    free(minHeap->array);
+    free(minHeap->pos);
+    free(minHeap);
 }
 
 void swapMinHeapNode(MinHeapNode** a, MinHeapNode** b) {
@@ -96,3 +103,4 @@ bool isInMinHeap(MinHeap* minHeap, int v) {
         return true;
     return false;
 }
+

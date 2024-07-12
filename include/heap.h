@@ -20,6 +20,7 @@ typedef struct MinHeap {
 MinHeapNode* newMinHeapNode(int v, int dist, int portalsUsed) ;
 MinHeap* createMinHeap(int capacity);
 void minHeapify(MinHeap* minHeap, int idx);
+void freeMinHeap(MinHeap* minHeap);
 int isEmpty(MinHeap* minHeap);
 MinHeapNode* extractMin(MinHeap* minHeap);
 void decreaseKey(MinHeap* minHeap, int v, int dist, int portalsUsed);

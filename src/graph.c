@@ -8,9 +8,12 @@
 
 #define INF INT_MAX
 
-
 AdjListNode* newAdjListNode(int dest, int weight) {
     AdjListNode* newNode = (AdjListNode*)malloc(sizeof(AdjListNode));
+    if (!newNode) {
+        perror("Failed to allocate memory for AdjListNode");
+        exit(EXIT_FAILURE);
+    }
     newNode->dest = dest;
     newNode->weight = weight;
     newNode->next = NULL;
@@ -19,11 +22,36 @@ AdjListNode* newAdjListNode(int dest, int weight) {
 
 Graph* createGraph(int V) {
     Graph* graph = (Graph*)malloc(sizeof(Graph));
+    if (!graph) {
+        perror("Failed to allocate memory for Graph");
+        exit(EXIT_FAILURE);
+    }
     graph->V = V;
     graph->array = (AdjList*)malloc(V * sizeof(AdjList));
+    if (!graph->array) {
+        perror("Failed to allocate memory for Graph array");
+        free(graph);
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < V; ++i)
         graph->array[i].head = NULL;
     return graph;
+}
+
+void freeAdjListNode(AdjListNode* node) {
+    while (node) {
+        AdjListNode* temp = node;
+        node = node->next;
+        free(temp);
+    }
+}
+
+void freeGraph(Graph* graph) {
+    for (int i = 0; i < graph->V; ++i) {
+        freeAdjListNode(graph->array[i].head);
+    }
+    free(graph->array);
+    free(graph);
 }
 
 void addEdge(Graph* graph, int src, int dest, int weight) {
@@ -54,10 +82,16 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
 
     while (!isEmpty(minHeap)) {
         MinHeapNode* minHeapNode = extractMin(minHeap);
+        if (!minHeapNode) {
+            fprintf(stderr, "Failed to extract min node. Heap might be empty.\n");
+            break;
+        }
         int u = minHeapNode->v;
+        free(minHeapNode); // Liberar o nó extraído
 
         if (u == dest) {
             printf("Found path with distance %d and %d portals used\n", dist[u], portalsUsed[u]);
+            freeMinHeap(minHeap); // Liberar a heap antes de retornar
             return;
         }
 
@@ -78,6 +112,7 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
     }
 
     printf("No path found\n");
+    freeMinHeap(minHeap); // Liberar a heap no final
 }
 
 double euclideanDistance(int x1, int y1, int x2, int y2) {
@@ -89,8 +124,8 @@ void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCo
     int dist[V];
     int portalsUsed[V];
     for (int i = 0; i < V; ++i) {
-    dist[i] = INF;
-    portalsUsed[i] = 0;
+        dist[i] = INF;
+        portalsUsed[i] = 0;
     }
 
     MinHeap* minHeap = createMinHeap(V);
@@ -102,10 +137,16 @@ void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCo
 
     while (!isEmpty(minHeap)) {
         MinHeapNode* minHeapNode = extractMin(minHeap);
+        if (!minHeapNode) {
+            fprintf(stderr, "Failed to extract min node. Heap might be empty.\n");
+            break;
+        }
         int u = minHeapNode->v;
+        free(minHeapNode); // Liberar o nó extraído
 
         if (u == dest) {
             printf("Found path with distance %d and %d portals used\n", dist[u], portalsUsed[u]);
+            freeMinHeap(minHeap); // Liberar a heap antes de retornar
             return;
         }
 
@@ -122,11 +163,12 @@ void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCo
             if (newDist <= s && newPortalsUsed <= k && fScore < dist[v]) {
                 dist[v] = fScore;
                 portalsUsed[v] = newPortalsUsed;
-                    decreaseKey(minHeap, v, fScore, newPortalsUsed);
+                decreaseKey(minHeap, v, fScore, newPortalsUsed);
             }
             pCrawl = pCrawl->next;
         }
     }
-    printf("No path found\n");
-}
 
+    printf("No path found\n");
+    freeMinHeap(minHeap); // Liberar a heap no final
+}

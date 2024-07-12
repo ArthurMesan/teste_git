@@ -23,5 +23,6 @@ void addPortal(Graph* graph, int src, int dest);
 void dijkstra(Graph* graph, int src, int dest, int s, int k);
 double euclideanDistance(int x1, int y1, int x2, int y2);
 void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords);
+void freeGraph(Graph* graph);
 
 #endif

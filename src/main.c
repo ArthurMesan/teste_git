@@ -28,5 +28,8 @@ int main() {
     printf("A* Modified:\n");
     aStar(graph, 0, 3, s, k, xCoords, yCoords);
 
+
+    freeGraph(graph);
+    
     return 0;
 }
