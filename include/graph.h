@@ -1,5 +1,5 @@
-#ifndef HEAPH_H
-#define HEAPH_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 typedef struct AdjListNode {
     int dest;
@@ -8,21 +8,20 @@ typedef struct AdjListNode {
 } AdjListNode;
 
 typedef struct AdjList {
-    AdjListNode* head;
+    struct AdjListNode *head;
 } AdjList;
 
 typedef struct Graph {
     int V;
-    AdjList* array;
+    struct AdjList* array;
 } Graph;
 
 AdjListNode* newAdjListNode(int dest, int weight);
 Graph* createGraph(int V);
+void freeGraph(Graph* graph);
 void addEdge(Graph* graph, int src, int dest, int weight);
 void addPortal(Graph* graph, int src, int dest);
 void dijkstra(Graph* graph, int src, int dest, int s, int k);
-double euclideanDistance(int x1, int y1, int x2, int y2);
 void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords);
-void freeGraph(Graph* graph);
 
-#endif
+#endif // GRAPH_H
