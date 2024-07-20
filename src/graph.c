@@ -7,13 +7,15 @@
 
 #define INF INT_MAX
 
-AdjListNode* newAdjListNode(int dest, int weight) {
+AdjListNode* newAdjListNode(int dest, int x, int y, double weight) {
     AdjListNode* newNode = (AdjListNode*)malloc(sizeof(AdjListNode));
     if (!newNode) {
         perror("Failed to allocate memory for AdjListNode");
         exit(EXIT_FAILURE);
     }
     newNode->dest = dest;
+    newNode->x = x;
+    newNode->y = y;
     newNode->weight = weight;
     newNode->next = NULL;
     return newNode;
@@ -34,6 +36,8 @@ Graph* createGraph(int V) {
     }
     for (int i = 0; i < V; ++i)
         graph->array[i].head = NULL;
+    for (size_t i = 0; i < V; i++)
+        graph->array[i].head->val = i;
     return graph;
 }
 
@@ -54,14 +58,35 @@ void freeGraph(Graph* graph) {
     free(graph);
 }
 
-void addEdge(Graph* graph, int src, int dest, int weight) {
-    AdjListNode* newNode = newAdjListNode(dest, weight);
+double euclideanDistance(Graph* graph, int u, int v) {
+    int x1,y1,x2,y2;
+    x1 = graph->array[u].head->x;
+    y1 = graph->array[u].head->y;
+    x2 = graph->array[v].head->x;
+    y2 = graph->array[v].head->y;
+    double valor = ((x1- x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    if (valor < 0){
+        valor = valor*(-1);
+    }
+    return sqrt(valor);
+}
+
+void addPosition(Graph* graph, int x, int y, int val){
+    graph->array[val].head->x = x;
+    graph->array[val].head->y = y;
+}
+
+void addEdge(Graph* graph, int src, int dest) {
+    double weight = euclideanDistance(graph, src, dest);
+    int x = graph->array[dest].head->x;
+    int y = graph->array[dest].head->y;
+    AdjListNode* newNode = newAdjListNode(dest, x, y, weight);
     newNode->next = graph->array[src].head;
     graph->array[src].head = newNode;
 }
 
 void addPortal(Graph* graph, int src, int dest) {
-    addEdge(graph, src, dest, 0);
+    addEdge(graph, src, dest);
 }
 
 void dijkstra(Graph* graph, int src, int dest, int s, int k) {
@@ -124,13 +149,8 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
     printf("No path found\n");
 }
 
-
-double euclideanDistance(int x1, int y1, int x2, int y2) {
-    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-}
-
 void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords) {
-    int V = graph->V;
+    /*int V = graph->V;
     int dist[V];
     int portalsUsed[V];
     for (int i = 0; i < V; ++i) {
@@ -193,6 +213,6 @@ void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCo
     }
 
     printf("No path found\n");
-    freeMinHeap(minHeap);
+    freeMinHeap(minHeap);*/
 }
 

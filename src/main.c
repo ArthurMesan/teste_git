@@ -13,12 +13,27 @@ int main() {
     int V = 5;  // Número de vértices
     Graph* graph = createGraph(V);
 
+    int n, m, p;
+    scanf("%d %d %d", &n, &m, &p);
+    
     int x, y;
     for (int i = 0; i < 5; i++)
     {
         scanf("%d %d", &x, &y);
-        addEdge(graph, x, y, 10);
+        addPosition(graph,x,y,i);
     }
+    int u, v;
+    for (int j = 0; j < m; j++)
+    {
+        scanf("%d %d", &u, &v);
+        addEdge(graph, u, v);
+    }
+
+    for (int k = 0; k < p; k++)
+    {
+        /* code */
+    }
+    
     
 
     //addPortal(graph, 0, 3);
