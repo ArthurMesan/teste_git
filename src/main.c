@@ -10,14 +10,12 @@
 #define INF INT_MAX
 
 int main() {
-    int V = 5;  // Número de vértices
-    Graph* graph = createGraph(V);
 
-    int n, m, p;
+    int n, m, p;//n: numero de vertices, m numero de trilhas, p numero de portais
     scanf("%d %d %d", &n, &m, &p);
-    
+    Graph* graph = createGraph(n);
     int x, y;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < n; i++)
     {
         scanf("%d %d", &x, &y);
         addPosition(graph,x,y,i);
@@ -33,23 +31,19 @@ int main() {
     {
         /* code */
     }
-    
-    
 
-    //addPortal(graph, 0, 3);
+    int s;//numero de portais que podem ser usados
+    int q;//quantidade de energia que pode ser usada
+    
+    scanf("%d %d", &s, &q);
+
 
     printf("Graph created successfully!\n");
 
     // Teste dijkstra
-    int src = 0, dest = 3;
-    int s = 20, k = 2;
-    printf("\nRunning Dijkstra's algorithm from vertex %d to vertex %d with s=%d and k=%d:\n", src, dest, s, k);
-    dijkstra(graph, src, dest, s, k);
+    int src = 0, dest = n-1;
+    printf("\nRunning Dijkstra's algorithm from vertex %d to vertex %d with s=%d and q=%d:\n", src, dest, s, q);
+    dijkstra(graph, src, dest, s, q);
 
-    // Teste aStar (supondo que tenhamos coordenadas x e y dos vértices)
-    //int xCoords[] = {0, 2, 4, 7, 9};
-    //int yCoords[] = {0, 1, 3, 5, 8};
-    //printf("\nRunning A* algorithm from vertex %d to vertex %d with s=%d and k=%d:\n", src, dest, s, k);
-    //aStar(graph, src, dest, s, k, xCoords, yCoords);
     return 0;
 }
