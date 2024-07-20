@@ -9,7 +9,7 @@
 
 #define INF INT_MAX
 
-int main() {
+/*int main() {
     int V = 5;
     Graph* graph = createGraph(V);
 
@@ -37,8 +37,8 @@ int main() {
     freeGraph(graph);
     
     return 0;
-}
-/*int main() {
+}*/
+int main() {
     int V = 5;  // Número de vértices
     Graph* graph = createGraph(V);
 
@@ -46,8 +46,10 @@ int main() {
     addEdge(graph, 0, 4, 5);
     addEdge(graph, 1, 2, 1);
     addEdge(graph, 1, 4, 2);
-    addEdge(graph, 2, 3, 4);
-    addEdge(graph, 3, 4, 6);make
+    addEdge(graph, 2, 3, 1);
+    addEdge(graph, 4, 3, 6);
+
+    //addPortal(graph, 0, 3);
 
     printf("Graph created successfully!\n");
 
@@ -63,7 +65,7 @@ int main() {
     //printf("\nRunning A* algorithm from vertex %d to vertex %d with s=%d and k=%d:\n", src, dest, s, k);
     //aStar(graph, src, dest, s, k, xCoords, yCoords);
     return 0;
-}*/
+}
 /*int main() {
     int V = 5;
     Graph* graph = createGraph(V);

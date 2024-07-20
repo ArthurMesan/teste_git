@@ -84,7 +84,7 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
     minHeap->array[src] = newMinHeapNode(src, 0, 0);
     minHeap->pos[src] = src;
     dist[src] = 0;
-    decreaseKey(minHeap, src, dist[src], 0);
+    decreaseKey(minHeap, src, dist[src], 1);
     minHeap->size = V;
     //minHeapify(minHeap, 0);
     while (!isEmpty(minHeap)) {

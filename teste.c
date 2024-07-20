@@ -209,12 +209,10 @@ struct MinHeapNode* extractMin(struct MinHeap*
         return NULL;
  
     // Store the root node
-    struct MinHeapNode* root = 
-                   minHeap->array[0];
+    struct MinHeapNode* root = minHeap->array[0];
  
     // Replace root node with last node
-    struct MinHeapNode* lastNode = 
-         minHeap->array[minHeap->size - 1];
+    struct MinHeapNode* lastNode = minHeap->array[minHeap->size - 1];
     minHeap->array[0] = lastNode;
  
     // Update position of last node
@@ -248,12 +246,9 @@ void decreaseKey(struct MinHeap* minHeap,
            minHeap->array[(i - 1) / 2]->dist)
     {
         // Swap this node with its parent
-        minHeap->pos[minHeap->array[i]->v] = 
-                                      (i-1)/2;
-        minHeap->pos[minHeap->array[
-                             (i-1)/2]->v] = i;
-        swapMinHeapNode(&minHeap->array[i],  
-                 &minHeap->array[(i - 1) / 2]);
+        minHeap->pos[minHeap->array[i]->v] = (i-1)/2;
+        minHeap->pos[minHeap->array[(i-1)/2]->v] = i;
+        swapMinHeapNode(&minHeap->array[i],  &minHeap->array[(i - 1) / 2]);
  
         // move to parent index
         i = (i - 1) / 2;
