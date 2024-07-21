@@ -21,6 +21,7 @@ typedef struct Graph {
 AdjListNode* newAdjListNode(int dest, int x, int y, double weight);
 Graph* createGraph(int V);
 void freeGraph(Graph* graph);
+void getVertexPosition(Graph* graph, int vertex, int* x, int* y);
 void addPosition(Graph* graph, int x, int y, int val);
 void addEdge(Graph* graph, int src, int dest);
 void addPortal(Graph* graph, int src, int dest);

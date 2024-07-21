@@ -61,17 +61,24 @@ void freeGraph(Graph* graph) {
     free(graph);
 }
 
-double euclideanDistance(Graph* graph, int u, int v) {
-    int x1,y1,x2,y2;
-    x1 = graph->array[u].head->x;
-    y1 = graph->array[u].head->y;
-    x2 = graph->array[v].head->x;
-    y2 = graph->array[v].head->y;
-    double valor = ((x1- x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-    if (valor < 0){
-        valor = valor*(-1);
+void getVertexPosition(Graph* graph, int vertex, int* x, int* y) {
+    if (graph->array[vertex].head != NULL) {
+        *x = graph->array[vertex].head->x;
+        *y = graph->array[vertex].head->y;
+    } else {
+        fprintf(stderr, "Vertex position not initialized\n");
+        *x = *y = 0;  // Valor padrão ou ajuste necessário
     }
-    return sqrt(valor);
+}
+
+double euclideanDistance(Graph* graph, int u, int v) {
+    int x1, y1, x2, y2;
+    getVertexPosition(graph, u, &x1, &y1);
+    getVertexPosition(graph, v, &x2, &y2);
+
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+    return sqrt(dx * dx + dy * dy);
 }
 
 void addPosition(Graph* graph, int x, int y, int val) {
@@ -80,7 +87,7 @@ void addPosition(Graph* graph, int x, int y, int val) {
         return;
     }
 
-    // Verifica se a lista de adjacência está inicializada
+    // Verifica se a posição já está inicializada
     if (graph->array[val].head == NULL) {
         graph->array[val].head = (AdjListNode*)malloc(sizeof(AdjListNode));
         if (!graph->array[val].head) {
@@ -90,10 +97,9 @@ void addPosition(Graph* graph, int x, int y, int val) {
         graph->array[val].head->next = NULL; // Inicializa o próximo nó como NULL
     }
 
-    // Atualiza as coordenadas
+    // Atualiza as coordenadas no nó de posição
     graph->array[val].head->x = x;
     graph->array[val].head->y = y;
-    graph->array[val].head->val = val; // Salva o valor no nó inicial
 }
 
 
@@ -103,7 +109,7 @@ void addEdge(Graph* graph, int src, int dest) {
         return;
     }
 
-    // Cria um novo nó e adiciona à lista de adjacência de src
+    // Calcula o peso usando as coordenadas reais
     double weight = euclideanDistance(graph, src, dest);
     AdjListNode* newNode = newAdjListNode(dest, 0, 0, weight);
     newNode->next = graph->array[src].head;
@@ -111,68 +117,24 @@ void addEdge(Graph* graph, int src, int dest) {
 }
 
 void addPortal(Graph* graph, int src, int dest) {
-    addEdge(graph, src, dest);
+    if (src >= graph->V || dest >= graph->V || src < 0 || dest < 0) {
+        fprintf(stderr, "Invalid edge\n");
+        return;
+    }
+
+    // Calcula o peso usando as coordenadas reais
+    double weight = 0;
+    AdjListNode* newNode = newAdjListNode(dest, 0, 0, weight);
+    newNode->next = graph->array[src].head;
+    graph->array[src].head = newNode;
 }
 
-/*void dijkstra(Graph* graph, int src, int dest, int s, int k) {
-    int V = graph->V;
-    int dist[V];
-    int portalsUsed[V];
-    bool visited[V];
-
-    // Inicialização
-    for (int i = 0; i < V; ++i) {
-        dist[i] = INF;
-        portalsUsed[i] = 0;
-        visited[i] = false;
-    }
-    dist[src] = 0;
-
-    for (int i = 0; i < V - 1; ++i) {
-        // Encontre o vértice com a menor distância que ainda não foi visitado
-        int minDist = INF;
-        int u = -1;
-        for (int j = 0; j < V; ++j) {
-            if (!visited[j] && dist[j] < minDist) {
-                minDist = dist[j];
-                u = j;
-            }
-        }
-
-        // Se não há mais vértices a serem processados, saia do loop
-        if (u == -1) break;
-
-        // Marcar o vértice como visitado
-        visited[u] = true;
-
-        // Atualize as distâncias dos vértices adjacentes
-        AdjListNode* pCrawl = graph->array[u].head;
-        while (pCrawl) {
-            int v = pCrawl->dest;
-            int weight = pCrawl->weight;
-            int newDist = dist[u] + weight;
-            int newPortalsUsed = portalsUsed[u] + (weight == 0 ? 1 : 0);
-
-            if (newDist <= s && newDist < dist[v]) {
-                dist[v] = newDist;
-                portalsUsed[v] = newPortalsUsed;
-            }
-            pCrawl = pCrawl->next;
-        }
-    }
-
-    // Verifica o resultado final
-    if (dist[dest] < INF) {
-        printf("Found path with distance %d and %d portals used\n", dist[dest], portalsUsed[dest]);
-    } else {
-        printf("No path found\n");
-    }
-}*/
 
 void dijkstra(Graph* graph, int src, int dest, int s, int k) {
     int V = graph->V;
     int dist[V];
     int portalsUsed[V];
+    bool visited[V];
     MinHeap* minHeap = createMinHeap(V);
 
     if (!minHeap) {
@@ -180,8 +142,11 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
         return;
     }
 
+    // Inicialização
     for (int i = 0; i < V; ++i) {
         dist[i] = INF;
+        portalsUsed[i] = 0;
+        visited[i] = false;
         minHeap->array[i] = newMinHeapNode(i, dist[i], 0);
         minHeap->pos[i] = i;
     }
@@ -189,36 +154,36 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
     minHeap->array[src] = newMinHeapNode(src, 0, 0);
     minHeap->pos[src] = src;
     dist[src] = 0;
-    decreaseKey(minHeap, src, dist[src], 1);
+    decreaseKey(minHeap, src, dist[src], portalsUsed[src]);
     minHeap->size = V;
-    //minHeapify(minHeap, 0);
+
     while (!isEmpty(minHeap)) {
-
-
         MinHeapNode* minHeapNode = extractMin(minHeap);
-        
         if (!minHeapNode) {
             fprintf(stderr, "Failed to extract min node. Heap might be empty.\n");
             break;
         }
         int u = minHeapNode->v;
-    
-        AdjListNode* pCrawl = graph->array[u].head;
+
         if (u == dest) {
             printf("Found path with distance %d and %d portals used\n", dist[u], portalsUsed[u]);
+            free(minHeapNode);  // Liberar minHeapNode antes de retornar
             freeMinHeap(minHeap);
-            freeAdjListNode(pCrawl);
-            freeMinHeapNode(minHeapNode);
             return;
         }
-        free(minHeapNode);
+        free(minHeapNode);  // Liberar minHeapNode após usá-lo
+
+        if (visited[u]) continue;
+        visited[u] = true;
+
+        AdjListNode* pCrawl = graph->array[u].head;
         while (pCrawl) {
             int v = pCrawl->dest;
             int weight = pCrawl->weight;
             int newDist = dist[u] + weight;
-            int newPortalsUsed = portalsUsed[u] + (weight == 0 ? 1 : 0);
+            int newPortalsUsed = portalsUsed[u]+(weight == 0 ? 1 : 0);;  // Ajustar se os portais não estão sendo usados
 
-            if (newDist <= s && newDist < dist[v]) {
+            if (newDist <= s && !visited[v] && newDist < dist[v]) {
                 dist[v] = newDist;
                 portalsUsed[v] = newPortalsUsed;
                 decreaseKey(minHeap, v, newDist, newPortalsUsed);
@@ -226,8 +191,11 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
             pCrawl = pCrawl->next;
         }
     }
+    freeMinHeap(minHeap);
     printf("No path found\n");
 }
+
+
 
 void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords) {
     /*int V = graph->V;

@@ -26,14 +26,15 @@ int main() {
         scanf("%d %d", &u, &v);
         addEdge(graph, u, v);
     }
-
+    int a, b;
     for (int k = 0; k < p; k++)
     {
-        /* code */
+        scanf("%d %d", &a, &b);
+        addPortal(graph, a, b);
     }
 
-    int s;//numero de portais que podem ser usados
-    int q;//quantidade de energia que pode ser usada
+    int s;//quantidade de energia que pode ser usada
+    int q;//numero de portais que podem ser usados
     
     scanf("%d %d", &s, &q);
 
