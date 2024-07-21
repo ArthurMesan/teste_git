@@ -1,0 +1,42 @@
+5 8 2
+846.047 557.580
+957.384 790.975
+315.252 87.093
+280.990 563.480
+939.339 376.051
+2 4
+4 0
+3 4
+2 1
+0 3
+1 4
+1 0
+4 1
+2 0
+4 2
+88.868 1
+
+arthur-mesquita@arthur-mesquita-Vivobook:~/Documentos/UFMG/Estrutura de Dados/teste_git$ ./bin/tp2.out < input_2.txt
+Graph created successfully!
+
+q= 1
+(Erro em q = 1??) Running Dijkstra's algorithm from vertex 0 to vertex 4 with s=1.000000 q = 1 :
+Checking edge 0 -> 2 with weight 0.000000, newDist 0.000000, newPortalsUsed 1
+Updating distance for node 2 to 0.000000 and portals used to 1
+Processing node 0 with distance 0.000000 and portals used 0
+Checking edge 0 -> 3 with weight 1.414214, newDist 1.414214, newPortalsUsed 0
+Processing node 0 with distance 0.000000 and portals used 0
+Checking edge 0 -> 1 with weight 1.000000, newDist 1.000000, newPortalsUsed 0
+Updating distance for node 1 to 1.000000 and portals used to 0
+Processing node 0 with distance 0.000000 and portals used 0
+Checking edge 0 -> 0 with weight 0.000000, newDist 0.000000, newPortalsUsed 1
+Processing node 0 with distance 0.000000 and portals used 0
+Checking edge 2 -> 4 with weight 10.000000, newDist 10.000000, newPortalsUsed 1
+Processing node 2 with distance 0.000000 and portals used 1
+Checking edge 2 -> 0 with weight 0.000000, newDist 0.000000, newPortalsUsed 2
+Processing node 2 with distance 0.000000 and portals used 1
+Checking edge 1 -> 4 with weight 10.198039, newDist 11.198039, newPortalsUsed 0
+Processing node 1 with distance 1.000000 and portals used 0
+Checking edge 1 -> 0 with weight 0.000000, newDist 1.000000, newPortalsUsed 1
+Processing node 1 with distance 1.000000 and portals used 0
+Found path with distance 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.000000 and 0 portals used

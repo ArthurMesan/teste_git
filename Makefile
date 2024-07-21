@@ -8,7 +8,7 @@ OBJS = $(OBJ)/graph.o $(OBJ)/heap.o $(OBJ)/main.o
 HDRS = $(INC)/graph.h $(INC)/heap.h
 CFLAGS = -g -Wall -c -I$(INC)
 
-EXE = $(BIN)/teste.out
+EXE = $(BIN)/tp2.out
 
 # Garante que os diretórios existem
 #DIRS = $(OBJ) $(BIN)
@@ -18,8 +18,8 @@ all: $(DIRS) $(EXE)
 $(DIRS):
 	mkdir -p $(DIRS)
 
-$(BIN)/teste.out: $(OBJS)
-	$(CC) -g -o $(BIN)/teste.out $(OBJS) $(LIBS)
+$(BIN)/tp2.out: $(OBJS)
+	$(CC) -g -o $(BIN)/tp2.out $(OBJS) $(LIBS)
 
 $(OBJ)/graph.o: $(HDRS) $(SRC)/graph.c
 	$(CC) $(CFLAGS) -o $(OBJ)/graph.o $(SRC)/graph.c

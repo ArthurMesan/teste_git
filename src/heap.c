@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "heap.h"
 
-MinHeapNode* newMinHeapNode(int v, int dist, int portalsUsed) {
+MinHeapNode* newMinHeapNode(int v, double dist, int portalsUsed) {
     MinHeapNode* minHeapNode = (MinHeapNode*)malloc(sizeof(MinHeapNode));
     if (!minHeapNode) {
         perror("Failed to allocate memory for MinHeapNode");
@@ -115,7 +115,7 @@ MinHeapNode* extractMin(MinHeap* minHeap) {
 }
 
 
-void decreaseKey(MinHeap* minHeap, int v, int dist, int portalsUsed) {
+void decreaseKey(MinHeap* minHeap, int v, double dist, int portalsUsed) {
     int i = minHeap->pos[v];
 
     minHeap->array[i]->dist = dist;

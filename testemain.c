@@ -9,6 +9,66 @@
 
 #define INF INT_MAX
 
+void dijkstra(Graph* graph, int src, int dest, int s, int k) {
+    int V = graph->V;
+    int dist[V];
+    int portalsUsed[V];
+    MinHeap* minHeap = createMinHeap(V);
+
+    if (!minHeap) {
+        fprintf(stderr, "Failed to create MinHeap\n");
+        return;
+    }
+
+    for (int i = 0; i < V; ++i) {
+        dist[i] = INF;
+        minHeap->array[i] = newMinHeapNode(i, dist[i], 0);
+        minHeap->pos[i] = i;
+    }
+
+    minHeap->array[src] = newMinHeapNode(src, 0, 0);
+    minHeap->pos[src] = src;
+    dist[src] = 0;
+    decreaseKey(minHeap, src, dist[src], 1);
+    minHeap->size = V;
+    //minHeapify(minHeap, 0);
+    while (!isEmpty(minHeap)) {
+
+
+        MinHeapNode* minHeapNode = extractMin(minHeap);
+        
+        if (!minHeapNode) {
+            fprintf(stderr, "Failed to extract min node. Heap might be empty.\n");
+            break;
+        }
+        int u = minHeapNode->v;
+    
+        AdjListNode* pCrawl = graph->array[u].head;
+        if (u == dest) {
+            printf("Found path with distance %d and %d portals used\n", dist[u], portalsUsed[u]);
+            freeMinHeap(minHeap);
+            freeAdjListNode(pCrawl);
+            freeMinHeapNode(minHeapNode);
+            return;
+        }
+        free(minHeapNode);
+        while (pCrawl) {
+            int v = pCrawl->dest;
+            int weight = pCrawl->weight;
+            int newDist = dist[u] + weight;
+            int newPortalsUsed = portalsUsed[u] + (weight == 0 ? 1 : 0);
+
+            if (newDist <= s && newDist < dist[v]) {
+                dist[v] = newDist;
+                portalsUsed[v] = newPortalsUsed;
+                decreaseKey(minHeap, v, newDist, newPortalsUsed);
+            }
+            pCrawl = pCrawl->next;
+        }
+    }
+    printf("No path found\n");
+}
+
 /*int main() {
     int V = 5;
     Graph* graph = createGraph(V);

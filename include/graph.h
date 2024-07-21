@@ -1,31 +1,33 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <stdbool.h>
+
 typedef struct AdjListNode {
     int dest;
     double weight;
-    int val;
-    int x, y;
+    double x, y;
     struct AdjListNode* next;
 } AdjListNode;
 
 typedef struct AdjList {
-    struct AdjListNode *head;
+    AdjListNode* head;
 } AdjList;
 
 typedef struct Graph {
     int V;
-    struct AdjList* array;
+    AdjList* array;
 } Graph;
 
-AdjListNode* newAdjListNode(int dest, int x, int y, double weight);
+AdjListNode* newAdjListNode(int dest, double x, double y, double weight);
 Graph* createGraph(int V);
+void freeAdjListNode(AdjListNode* node);
 void freeGraph(Graph* graph);
-void getVertexPosition(Graph* graph, int vertex, int* x, int* y);
-void addPosition(Graph* graph, int x, int y, int val);
 void addEdge(Graph* graph, int src, int dest);
 void addPortal(Graph* graph, int src, int dest);
-void dijkstra(Graph* graph, int src, int dest, int s, int k);
-void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords);
+void addPosition(Graph* graph, double x, double y, int val);
+void getVertexPosition(Graph* graph, int vertex, double* x, double* y);
+double euclideanDistance(Graph* graph, int u, int v);
+void dijkstra(Graph* graph, int src, int dest, double s, int k);
 
 #endif // GRAPH_H

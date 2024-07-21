@@ -14,10 +14,10 @@ int main() {
     int n, m, p;//n: numero de vertices, m numero de trilhas, p numero de portais
     scanf("%d %d %d", &n, &m, &p);
     Graph* graph = createGraph(n);
-    int x, y;
+    double x, y;
     for (int i = 0; i < n; i++)
     {
-        scanf("%d %d", &x, &y);
+        scanf("%le %le", &x, &y);
         addPosition(graph,x,y,i);
     }
     int u, v;
@@ -33,17 +33,17 @@ int main() {
         addPortal(graph, a, b);
     }
 
-    int s;//quantidade de energia que pode ser usada
+    double s;//quantidade de energia que pode ser usada
     int q;//numero de portais que podem ser usados
     
-    scanf("%d %d", &s, &q);
+    scanf("%le %d", &s,&q);
 
 
     printf("Graph created successfully!\n");
-
+    printf("\nq= %d", q);
     // Teste dijkstra
     int src = 0, dest = n-1;
-    printf("\nRunning Dijkstra's algorithm from vertex %d to vertex %d with s=%d and q=%d:\n", src, dest, s, q);
+    printf("\n(Erro em q = %d??) Running Dijkstra's algorithm from vertex %d to vertex %d with s=%f q = %d :\n", q, src, dest, s, q);
     dijkstra(graph, src, dest, s, q);
 
     return 0;

@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
+#include <float.h>
 #include "graph.h"
 #include "heap.h"
 
-#define INF INT_MAX
+#define INF DBL_MAX
 
-AdjListNode* newAdjListNode(int dest, int x, int y, double weight) {
+AdjListNode* newAdjListNode(int dest, double x, double y, double weight) {
     AdjListNode* newNode = (AdjListNode*)malloc(sizeof(AdjListNode));
     if (!newNode) {
         perror("Failed to allocate memory for new adjacency list node");
@@ -61,7 +62,7 @@ void freeGraph(Graph* graph) {
     free(graph);
 }
 
-void getVertexPosition(Graph* graph, int vertex, int* x, int* y) {
+void getVertexPosition(Graph* graph, int vertex, double* x, double* y) {
     if (graph->array[vertex].head != NULL) {
         *x = graph->array[vertex].head->x;
         *y = graph->array[vertex].head->y;
@@ -72,7 +73,7 @@ void getVertexPosition(Graph* graph, int vertex, int* x, int* y) {
 }
 
 double euclideanDistance(Graph* graph, int u, int v) {
-    int x1, y1, x2, y2;
+    double x1, y1, x2, y2;
     getVertexPosition(graph, u, &x1, &y1);
     getVertexPosition(graph, v, &x2, &y2);
 
@@ -81,7 +82,7 @@ double euclideanDistance(Graph* graph, int u, int v) {
     return sqrt(dx * dx + dy * dy);
 }
 
-void addPosition(Graph* graph, int x, int y, int val) {
+void addPosition(Graph* graph, double x, double y, int val) {
     if (val >= graph->V || val < 0) {
         fprintf(stderr, "Invalid position\n");
         return;
@@ -130,9 +131,9 @@ void addPortal(Graph* graph, int src, int dest) {
 }
 
 
-void dijkstra(Graph* graph, int src, int dest, int s, int k) {
+void dijkstra(Graph* graph, int src, int dest, double s, int k) {
     int V = graph->V;
-    int dist[V];
+    double dist[V];
     int portalsUsed[V];
     bool visited[V];
     MinHeap* minHeap = createMinHeap(V);
@@ -166,7 +167,7 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
         int u = minHeapNode->v;
 
         if (u == dest) {
-            printf("Found path with distance %d and %d portals used\n", dist[u], portalsUsed[u]);
+            printf("Found path with distance %f and %d portals used\n", dist[u], portalsUsed[u]);
             free(minHeapNode);  // Liberar minHeapNode antes de retornar
             freeMinHeap(minHeap);
             return;
@@ -179,25 +180,32 @@ void dijkstra(Graph* graph, int src, int dest, int s, int k) {
         AdjListNode* pCrawl = graph->array[u].head;
         while (pCrawl) {
             int v = pCrawl->dest;
-            int weight = pCrawl->weight;
-            int newDist = dist[u] + weight;
+            double weight = pCrawl->weight;
+            double newDist = dist[u] + weight;
             int newPortalsUsed = portalsUsed[u]+(weight == 0 ? 1 : 0);;  // Ajustar se os portais não estão sendo usados
-
+            printf("Checking edge %d -> %d with weight %f, newDist %f, newPortalsUsed %d\n", u, v, weight, newDist, newPortalsUsed);
             if (newDist <= s && !visited[v] && newDist < dist[v]) {
+                printf("Updating distance for node %d to %f and portals used to %d\n", v, newDist, newPortalsUsed);
                 dist[v] = newDist;
                 portalsUsed[v] = newPortalsUsed;
                 decreaseKey(minHeap, v, newDist, newPortalsUsed);
             }
+            printf("Processing node %d with distance %f and portals used %d\n", u, dist[u], portalsUsed[u]);
             pCrawl = pCrawl->next;
         }
     }
+    if (dist[dest] == INF) {
+        printf("No path found from %d to %d within %d portals.\n", src, dest, k);
+    } else {
+        printf("Shortest path from %d to %d is %.2f with %d portals used.\n", src, dest, dist[dest], portalsUsed[dest]);
+    }
     freeMinHeap(minHeap);
-    printf("No path found\n");
+    
 }
 
 
 
-void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords) {
+//void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords) {
     /*int V = graph->V;
     int dist[V];
     int portalsUsed[V];
@@ -262,5 +270,5 @@ void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCo
 
     printf("No path found\n");
     freeMinHeap(minHeap);*/
-}
+//}
 
