@@ -8,71 +8,68 @@
 
 #define INF DBL_MAX
 
-AdjListNode* newAdjListNode(int dest, double x, double y, double weight) {
+AdjListNode* newAdjListNode(int dest, double weight) {
     AdjListNode* newNode = (AdjListNode*)malloc(sizeof(AdjListNode));
-    if (!newNode) {
-        perror("Failed to allocate memory for new adjacency list node");
-        exit(EXIT_FAILURE);
-    }
     newNode->dest = dest;
     newNode->weight = weight;
-    newNode->x = x;
-    newNode->y = y;
     newNode->next = NULL;
     return newNode;
 }
 
+// Função para criar um grafo com V vértices
 Graph* createGraph(int V) {
     Graph* graph = (Graph*)malloc(sizeof(Graph));
-    if (!graph) {
-        perror("Failed to allocate memory for graph");
-        exit(EXIT_FAILURE);
-    }
-
     graph->V = V;
     graph->array = (AdjList*)malloc(V * sizeof(AdjList));
-    if (!graph->array) {
-        perror("Failed to allocate memory for adjacency list array");
-        free(graph);
-        exit(EXIT_FAILURE);
-    }
-
-    for (int i = 0; i < V; ++i) {
+    graph->vertices = (Vertex*)malloc(V * sizeof(Vertex));
+    
+    for (int i = 0; i < V; i++) {
         graph->array[i].head = NULL;
+        graph->vertices[i].x = 0.0;
+        graph->vertices[i].y = 0.0;
     }
 
     return graph;
 }
 
 
+// Função para liberar a memória de um nó da lista de adjacência
 void freeAdjListNode(AdjListNode* node) {
-    while (node) {
-        AdjListNode* temp = node;
-        node = node->next;
-        free(temp);
-    }
+    free(node);
 }
 
+// Função para liberar a memória de um grafo
 void freeGraph(Graph* graph) {
-    for (int i = 0; i < graph->V; ++i) {
-        freeAdjListNode(graph->array[i].head);
-        graph->array[i].head = NULL;
+    for (int i = 0; i < graph->V; i++) {
+        AdjListNode* node = graph->array[i].head;
+        while (node) {
+            AdjListNode* temp = node;
+            node = node->next;
+            freeAdjListNode(temp);
+        }
     }
     free(graph->array);
+    free(graph->vertices);
     free(graph);
 }
 
-void getVertexPosition(Graph* graph, int vertex, double* x, double* y) {
-    if (graph->array[vertex].head != NULL) {
-        *x = graph->array[vertex].head->x;
-        *y = graph->array[vertex].head->y;
-    } else {
-        fprintf(stderr, "Vertex position not initialized\n");
-        *x = *y = 0;  // Valor padrão ou ajuste necessário
+// Função para adicionar um vértice com posição (x, y)
+void addVertexPosition(Graph* graph, int vertex, double x, double y) {
+    if (vertex >= 0 && vertex < graph->V) {
+        graph->vertices[vertex].x = x;
+        graph->vertices[vertex].y = y;
     }
 }
 
-double euclideanDistance(Graph* graph, int u, int v) {
+// Função para obter a posição de um vértice
+void getVertexPosition(Graph* graph, int vertex, double* x, double* y) {
+    if (vertex >= 0 && vertex < graph->V) {
+        *x = graph->vertices[vertex].x;
+        *y = graph->vertices[vertex].y;
+    }
+}
+
+/*double euclideanDistance(Graph* graph, int u, int v) {
     double x1, y1, x2, y2;
     getVertexPosition(graph, u, &x1, &y1);
     getVertexPosition(graph, v, &x2, &y2);
@@ -80,41 +77,34 @@ double euclideanDistance(Graph* graph, int u, int v) {
     double dx = x2 - x1;
     double dy = y2 - y1;
     return sqrt(dx * dx + dy * dy);
+}*/
+
+// Função para calcular a distância euclidiana entre dois vértices
+double euclideanDistance(Graph* graph, int u, int v) {
+    double x1 = graph->vertices[u].x;
+    double y1 = graph->vertices[u].y;
+    double x2 = graph->vertices[v].x;
+    double y2 = graph->vertices[v].y;
+    return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
-void addPosition(Graph* graph, double x, double y, int val) {
-    if (val >= graph->V || val < 0) {
-        fprintf(stderr, "Invalid position\n");
-        return;
-    }
-
-    // Verifica se a posição já está inicializada
-    if (graph->array[val].head == NULL) {
-        graph->array[val].head = (AdjListNode*)malloc(sizeof(AdjListNode));
-        if (!graph->array[val].head) {
-            perror("Failed to allocate memory for AdjListNode");
-            exit(EXIT_FAILURE);
-        }
-        graph->array[val].head->next = NULL; // Inicializa o próximo nó como NULL
-    }
-
-    // Atualiza as coordenadas no nó de posição
-    graph->array[val].head->x = x;
-    graph->array[val].head->y = y;
-}
-
-
-void addEdge(Graph* graph, int src, int dest) {
-    if (src >= graph->V || dest >= graph->V || src < 0 || dest < 0) {
-        fprintf(stderr, "Invalid edge\n");
-        return;
-    }
-
-    // Calcula o peso usando as coordenadas reais
-    double weight = euclideanDistance(graph, src, dest);
-    AdjListNode* newNode = newAdjListNode(dest, 0, 0, weight);
+// Função para adicionar uma aresta ao grafo
+void addEdge(Graph* graph, int src, int dest, double weight) {
+    // Adiciona dest à lista de adjacência de src
+    AdjListNode* newNode = newAdjListNode(dest, weight);
     newNode->next = graph->array[src].head;
     graph->array[src].head = newNode;
+
+    // Se o grafo é não direcionado, adicione src à lista de adjacência de dest
+    newNode = newAdjListNode(src, weight);
+    newNode->next = graph->array[dest].head;
+    graph->array[dest].head = newNode;
+}
+
+// Função para adicionar uma aresta com peso baseado na distância euclidiana
+void addEdgeWithDistance(Graph* graph, int src, int dest) {
+    double weight = euclideanDistance(graph, src, dest);
+    addEdge(graph, src, dest, weight);
 }
 
 void addPortal(Graph* graph, int src, int dest) {
@@ -125,7 +115,7 @@ void addPortal(Graph* graph, int src, int dest) {
 
     // Calcula o peso usando as coordenadas reais
     double weight = 0;
-    AdjListNode* newNode = newAdjListNode(dest, 0, 0, weight);
+    AdjListNode* newNode = newAdjListNode(dest, weight);
     newNode->next = graph->array[src].head;
     graph->array[src].head = newNode;
 }
@@ -167,6 +157,7 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
         int u = minHeapNode->v;
 
         if (u == dest) {
+
             printf("Found path with distance %f and %d portals used\n", dist[u], portalsUsed[u]);
             free(minHeapNode);  // Liberar minHeapNode antes de retornar
             freeMinHeap(minHeap);
@@ -205,16 +196,20 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
 
 
 
-//void aStar(Graph* graph, int src, int dest, int s, int k, int* xCoords, int* yCoords) {
-    /*int V = graph->V;
-    int dist[V];
+void aStar(Graph* graph, int src, int dest, double s, int k) {
+    int V = graph->V;
+    double dist[V];
     int portalsUsed[V];
+    double heuristic = 0;
+    bool visited[V];
+    MinHeap* minHeap = createMinHeap(V);
     for (int i = 0; i < V; ++i) {
         dist[i] = INF;
         portalsUsed[i] = 0;
+        visited[i] = false;
+        minHeap->array[i] = newMinHeapNode(i, dist[i], 0);
+        minHeap->pos[i] = i;
     }
-
-    MinHeap* minHeap = createMinHeap(V);
 
     if (!minHeap) {
         fprintf(stderr, "Failed to create MinHeap\n");
@@ -227,12 +222,14 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
         fprintf(stderr, "Failed to create MinHeapNode\n");
         return;
     }
-    minHeap->pos[src] = 0;
+
+    minHeap->array[src] = newMinHeapNode(src, 0, 0);
+    minHeap->pos[src] = src;
     dist[src] = 0;
+    decreaseKey(minHeap, src, dist[src], portalsUsed[src]);
     minHeap->size = V;
-    printf("existe algum problema aqui?\n");
+
     while (!isEmpty(minHeap)) {
-        printf("Existe algum problema aqui?\n");
 
         MinHeapNode* minHeapNode = extractMin(minHeap);//teste para extrair a minheap aqui
         
@@ -241,25 +238,27 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
             break;
         }
         int u = minHeapNode->v;
+        if (visited[u]) continue;
+            visited[u] = true;
         free(minHeapNode);
 
-        if (u == dest) {
-            printf("Found path with distance %d and %d portals used\n", dist[u], portalsUsed[u]);
-            freeMinHeap(minHeap);
-            return;
-        }
 
         AdjListNode* pCrawl = graph->array[u].head;
         while (pCrawl != NULL) {
             int v = pCrawl->dest;
-            int weight = pCrawl->weight;
-            int newDist = dist[u] + weight;
+            double weight = pCrawl->weight;
+            double newDist = dist[u] + weight;
             int newPortalsUsed = portalsUsed[u] + (weight == 0 ? 1 : 0);
+            double f = newDist + heuristic;
+            if (u == dest) {
+            heuristic = euclideanDistance(graph, v, dest);
+            printf("Found path with distance %f and %d portals used\n", dist[u], portalsUsed[u]);
+            freeMinHeap(minHeap);
+            return;
+            }
 
-            double heuristic = euclideanDistance(xCoords[v], yCoords[v], xCoords[dest], yCoords[dest]);
-            int f = newDist + (int)heuristic;
 
-            if (newDist <= s && newPortalsUsed <= k && f < dist[v]) {
+            if (newDist <= s && !visited[v] && newDist < dist[v]) {
                 dist[v] = f;
                 portalsUsed[v] = newPortalsUsed;
                 decreaseKey(minHeap, v, f, newPortalsUsed);
@@ -269,6 +268,6 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
     }
 
     printf("No path found\n");
-    freeMinHeap(minHeap);*/
-//}
+    freeMinHeap(minHeap);
+}
 

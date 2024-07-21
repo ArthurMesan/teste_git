@@ -3,31 +3,45 @@
 
 #include <stdbool.h>
 
+// Estrutura para armazenar as coordenadas dos vértices
+typedef struct Vertex {
+    double x, y;  // Coordenadas dos vértices
+} Vertex;
+
+// Estrutura para armazenar um nó da lista de adjacência
 typedef struct AdjListNode {
-    int dest;
-    double weight;
-    double x, y;
-    struct AdjListNode* next;
+    int dest;          // Vértice de destino
+    double weight;     // Peso da aresta
+    struct AdjListNode* next; // Próximo nó na lista de adjacência
 } AdjListNode;
 
+// Estrutura para uma lista de adjacência
 typedef struct AdjList {
-    AdjListNode* head;
+    AdjListNode* head; // Cabeça da lista
 } AdjList;
 
+// Estrutura para o grafo
 typedef struct Graph {
-    int V;
-    AdjList* array;
+    int V;             // Número de vértices
+    AdjList* array;    // Array de listas de adjacência
+    Vertex* vertices;  // Array de coordenadas dos vértices
 } Graph;
 
-AdjListNode* newAdjListNode(int dest, double x, double y, double weight);
+// Função para criar um novo nó da lista de adjacência
+AdjListNode* newAdjListNode(int dest, double weight);
+
+// Funções para gerenciar o grafo
 Graph* createGraph(int V);
 void freeAdjListNode(AdjListNode* node);
 void freeGraph(Graph* graph);
-void addEdge(Graph* graph, int src, int dest);
 void addPortal(Graph* graph, int src, int dest);
-void addPosition(Graph* graph, double x, double y, int val);
+void addEdge(Graph* graph, int src, int dest, double weight);
+void addEdgeWithDistance(Graph* graph, int src, int dest);
+void addVertexPosition(Graph* graph, int vertex, double x, double y);
 void getVertexPosition(Graph* graph, int vertex, double* x, double* y);
 double euclideanDistance(Graph* graph, int u, int v);
 void dijkstra(Graph* graph, int src, int dest, double s, int k);
+void aStar(Graph* graph, int src, int dest, double s, int k);
 
 #endif // GRAPH_H
+

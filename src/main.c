@@ -18,13 +18,13 @@ int main() {
     for (int i = 0; i < n; i++)
     {
         scanf("%le %le", &x, &y);
-        addPosition(graph,x,y,i);
+        addVertexPosition(graph,i,x,y);
     }
     int u, v;
     for (int j = 0; j < m; j++)
     {
         scanf("%d %d", &u, &v);
-        addEdge(graph, u, v);
+        addEdgeWithDistance(graph, u, v);
     }
     int a, b;
     for (int k = 0; k < p; k++)
@@ -40,11 +40,11 @@ int main() {
 
 
     printf("Graph created successfully!\n");
-    printf("\nq= %d", q);
-    // Teste dijkstra
     int src = 0, dest = n-1;
-    printf("\n(Erro em q = %d??) Running Dijkstra's algorithm from vertex %d to vertex %d with s=%f q = %d :\n", q, src, dest, s, q);
-    dijkstra(graph, src, dest, s, q);
-
+    printf("Running Dijkstra's algorithm from vertex %d to vertex %d with s=%f q = %d :\n", src, dest, s, q);
+    dijkstra(graph, 0, dest, s, q);
+    printf("\n\n");
+    printf("Running A* algorithm from vertex %d to vertex %d with s=%f q = %d :\n", src, dest, s, q);
+    aStar(graph, 0, dest, s, q);
     return 0;
 }
