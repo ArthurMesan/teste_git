@@ -23,16 +23,16 @@ typedef struct AdjList {
 // Estrutura para o grafo
 typedef struct Graph {
     int V;             // Número de vértices
-    AdjList* array;    // Array de listas de adjacência
+    double** adjMatrix; // Matriz de adjacência
     Vertex* vertices;  // Array de coordenadas dos vértices
 } Graph;
 
 // Função para criar um novo nó da lista de adjacência
-AdjListNode* newAdjListNode(int dest, double weight);
+//AdjListNode* newAdjListNode(int dest, double weight);
 
 // Funções para gerenciar o grafo
 Graph* createGraph(int V);
-void freeAdjListNode(AdjListNode* node);
+//void freeAdjListNode(AdjListNode* node);
 void freeGraph(Graph* graph);
 void addPortal(Graph* graph, int src, int dest);
 void addEdge(Graph* graph, int src, int dest, double weight);
