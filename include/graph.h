@@ -40,6 +40,7 @@ void addEdgeWithDistance(Graph* graph, int src, int dest);
 void addVertexPosition(Graph* graph, int vertex, double x, double y);
 void getVertexPosition(Graph* graph, int vertex, double* x, double* y);
 double euclideanDistance(Graph* graph, int u, int v);
+void printPath(int predecessors[], int current);
 void dijkstra(Graph* graph, int src, int dest, double s, int k);
 void aStar(Graph* graph, int src, int dest, double s, int k);
 

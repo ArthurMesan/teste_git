@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <math.h>
 #include <limits.h>
+#include <time.h>
 #include "graph.h"
 #include "heap.h"
 
@@ -42,9 +43,17 @@ int main() {
     printf("Graph created successfully!\n");
     int src = 0, dest = n-1;
     printf("Running Dijkstra's algorithm from vertex %d to vertex %d with s=%f q = %d :\n", src, dest, s, q);
-    dijkstra(graph, 0, dest, s, q);
+    clock_t start = clock();
+    dijkstra(graph, src, dest, s, q);
+    clock_t end = clock();
+    double time_spent_dijkstra = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Dijkstra execution time: %f seconds\n", time_spent_dijkstra);
     printf("\n\n");
     printf("Running A* algorithm from vertex %d to vertex %d with s=%f q = %d :\n", src, dest, s, q);
-    aStar(graph, 0, dest, s, q);
+    start = clock();
+    aStar(graph, src, dest, s, q);
+    end = clock();
+    double time_spent_astar = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("A* execution time: %f seconds\n", time_spent_astar);
     return 0;
 }

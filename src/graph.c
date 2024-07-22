@@ -85,11 +85,21 @@ void addPortal(Graph* graph, int src, int dest) {
     graph->adjMatrix[dest][src] = 0; // Se o grafo for não direcionado
 }
 
+void printPath(int predecessors[], int current) {
+    if (predecessors[current] == -1) {
+        printf("%d ", current);
+        return;
+    }
+    printPath(predecessors, predecessors[current]);
+    printf("%d ", current);
+}
+
 void dijkstra(Graph* graph, int src, int dest, double s, int k) {
     int V = graph->V;
     double dist[V];
     int portalsUsed[V];
     bool visited[V];
+    int predecessors[V]; // Array de predecessores
     MinHeap* minHeap = createMinHeap(V);
 
     if (!minHeap) {
@@ -102,6 +112,7 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
         dist[i] = INF;
         portalsUsed[i] = 0;
         visited[i] = false;
+        predecessors[i] = -1;
         minHeap->array[i] = newMinHeapNode(i, dist[i], 0);
         minHeap->pos[i] = i;
     }
@@ -122,7 +133,14 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
         free(minHeapNode);
 
         if (u == dest) {
-            printf("Found path with distance %f and %d portals used\n", dist[u], portalsUsed[u]);
+            if (dist[u] == INF)
+            {
+                printf("No path found\n");
+            }else{
+                printf("Found path with distance %f and %d portals used\n", dist[u], portalsUsed[u]);
+                printf("Short path:");
+                printPath(predecessors, dest); // Imprimir o caminho
+            }
             freeMinHeap(minHeap);
             return;
         }
@@ -140,6 +158,7 @@ void dijkstra(Graph* graph, int src, int dest, double s, int k) {
                 if (newDist <= s && newPortalsUsed <= k && !visited[v] && newDist < dist[v]) {
                     dist[v] = newDist;
                     portalsUsed[v] = newPortalsUsed;
+                    predecessors[v] = u;
                     decreaseKey(minHeap, v, newDist, newPortalsUsed);
                 }
             }
@@ -163,6 +182,7 @@ void aStar(Graph* graph, int src, int dest, double s, int k) {
     double heuristic[V];
     double h = 0;
     bool visited[V];
+    int predecessors[V]; // Array de predecessores
     MinHeap* minHeap = createMinHeap(V);
 
     if (!minHeap) {
@@ -176,6 +196,7 @@ void aStar(Graph* graph, int src, int dest, double s, int k) {
         portalsUsed[i] = 0;
         heuristic[i] = INF;
         visited[i] = false;
+        predecessors[i] = -1;
         minHeap->array[i] = newMinHeapNode(i, dist[i], 0);
         minHeap->pos[i] = i;
     }
@@ -200,7 +221,14 @@ void aStar(Graph* graph, int src, int dest, double s, int k) {
         visited[u] = true;
 
         if (u == dest) {
-            printf("Found path with distance %f and %d portals used\n", dist[u], portalsUsed[u]);
+            if (dist[u] == INF)
+            {
+                printf("No path found\n");
+            }else{
+                printf("Found path with distance %f and %d portals used\n", dist[u], portalsUsed[u]);
+                printf("Short path:");
+                printPath(predecessors, dest); // Imprimir o caminho
+            }
             freeMinHeap(minHeap);
             return;
         }
@@ -220,6 +248,7 @@ void aStar(Graph* graph, int src, int dest, double s, int k) {
                 if (newDist <= s && newPortalsUsed <= k && !visited[v] && newDist < dist[v]) {
                     dist[v] = newDist;
                     portalsUsed[v] = newPortalsUsed;
+                    predecessors[v] = u; // Atualizar o predecessor
                     decreaseKey(minHeap, v, f, newPortalsUsed);
                 }
             }
